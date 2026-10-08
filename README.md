@@ -16,4 +16,4 @@ The maintained versions live in [natori-on-psyfr](https://github.com/bradleyhome
 
 `.oph` session files hold the dates you enter, so `.gitignore` keeps them out of the repository.
 
-Licensed under the [GNU GPL v3](LICENSE).
+© 2026 Bradley Rogue. All rights reserved.
