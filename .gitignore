@@ -1,2 +1,8 @@
 # Ophis session files hold the dates you enter. Keep them out of the repository.
 *.oph
+
+# Reference PDFs stay private.
+*.pdf
+
+# macOS folder metadata.
+.DS_Store
