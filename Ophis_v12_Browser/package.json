@@ -7,11 +7,6 @@
   "author": {
     "name": "Ophis"
   },
-  "contributors": [
-    {
-      "name": "Doug Koellmer"
-    }
-  ],
   "scripts": {
     "start": "electron ."
   },
