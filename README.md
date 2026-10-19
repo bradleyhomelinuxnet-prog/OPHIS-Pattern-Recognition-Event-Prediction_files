@@ -12,6 +12,8 @@ Working builds of the Ophis date-projection instrument and the Chronicon calendr
 | [instrument-copy.html](instrument-copy.html) | Ophis Web, the date projection engine |
 | [Chronicon_Engine_v2.html](Chronicon_Engine_v2.html) | The Chronicon calendrics and clocks engine |
 
+Every build here carries the Extras and the ten Mirrors packs; [MIRRORS.md](MIRRORS.md) lists the Mirrors (operations 27–36) and the grid they complete.
+
 The maintained versions live in [natori-on-psyfr](https://github.com/bradleyhomelinuxnet-prog/natori-on-psyfr) and [NatorionCipherPredictiveEngine](https://github.com/bradleyhomelinuxnet-prog/NatorionCipherPredictiveEngine). All projects: [the hub](https://bradleyhomelinuxnet-prog.github.io/).
 
 `.oph` session files hold the dates you enter, so `.gitignore` keeps them out of the repository.
