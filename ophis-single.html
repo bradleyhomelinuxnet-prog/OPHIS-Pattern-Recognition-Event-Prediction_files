@@ -1070,6 +1070,8 @@ pre.blob {
 
   <header class="topbar">
     <div class="brand">OPHIS <small>Pattern-Recognition Event Prediction</small></div>
+    <button id="openBtn" class="btn" type="button" title="Open a .oph file · Ctrl+O">☰ Open</button>
+    <input id="openFile" type="file" accept=".oph,.json,.txt,application/json,text/plain" hidden>
     <nav class="screens" id="screenNav" aria-label="Screens"></nav>
     <div class="chrome">
       <div class="zoomctl" role="group" aria-label="Text size">
@@ -3402,12 +3404,55 @@ pre.blob {
     else document.documentElement.setAttribute("data-theme", theme);
     saveOptions();
   }
+  // Open a .oph straight from the top bar. The Import screen fills its box
+  // and waits for Load; this applies the document at once, through the same
+  // parser, validation and unsaved-changes question.
+  async function openOphFile(f) {
+    let text;
+    try {
+      text = await f.text();
+    } catch (err) {
+      toast(`Could not read ${f.name}: ${err.message || err}`, "error");
+      return;
+    }
+    if (/^\s*</.test(text)) {
+      toast(`${f.name} is a web page, not an .oph document.`, "error");
+      return;
+    }
+    const parsed = parseDocument(text, VALIDATION.LOOSE);
+    if (!parsed.document) {
+      for (const e of parsed.errors) log("import", e);
+      toast(`Could not open ${f.name} \u2014 ${parsed.errors[0] ?? "not an .oph document"}`, "error");
+      return;
+    }
+    if (!state.saved) {
+      const ok = await confirmDialog({
+        title: "You have unsaved changes.",
+        body: "Are you sure you want to overwrite them?",
+        cancel: "NO, don't overwrite",
+        confirm: "YES, overwrite",
+        danger: true
+      });
+      if (!ok) return;
+    }
+    adoptDocument(parsed.document);
+    for (const w of parsed.warnings) log("import", w);
+    goto("work");
+    toast(`Opened ${f.name} \xB7 ${parsed.document.iso_events.length} event(s)` + (parsed.warnings.length ? ` \xB7 ${parsed.warnings.length} warning(s) in the log` : ""));
+  }
   function initChrome() {
     applyZoom(Number(state.options.text_zoom) || 1);
     applyTheme(state.options.theme ?? "dark");
     $("zoomDown").onclick = () => applyZoom((Number(state.options.text_zoom) || 1) - ZOOM_STEP);
     $("zoomReset").onclick = () => applyZoom(1);
     $("zoomUp").onclick = () => applyZoom((Number(state.options.text_zoom) || 1) + ZOOM_STEP);
+    const openFile = $("openFile");
+    $("openBtn").onclick = () => openFile.click();
+    openFile.onchange = async (e) => {
+      const f = e.target.files?.[0];
+      e.target.value = "";
+      if (f) await openOphFile(f);
+    };
     const themeBtn = $("themeBtn");
     const cycle = { dark: "light", light: "system", system: "dark" };
     const face = { dark: "☾ Dark", light: "☀ Light", system: "◑ System" };
@@ -6281,6 +6326,10 @@ stream
       safely("options", saveOptions);
     });
     addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "o") {
+        e.preventDefault();
+        $("openFile").click();
+      }
       if ((e.ctrlKey || e.metaKey) && e.key === "s") {
         e.preventDefault();
         persistDocument();
